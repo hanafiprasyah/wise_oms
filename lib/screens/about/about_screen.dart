@@ -145,7 +145,7 @@ class _DescState extends State<Desc> {
                   width: MediaQuery.of(context).size.width,
                   height: 200,
                   color: Colors.transparent,
-                  margin: EdgeInsets.symmetric(horizontal: 12),
+                  margin: EdgeInsets.symmetric(vertical: 0),
                   child: ListView(
                     physics: NeverScrollableScrollPhysics(),
                     children: [
@@ -165,212 +165,19 @@ class _DescState extends State<Desc> {
                           },
                           options: CarouselOptions(
                               height: 180,
-                              enlargeCenterPage: false,
+                              enlargeCenterPage: true,
                               autoPlay: true,
                               aspectRatio: 16/9,
                               autoPlayCurve: Curves.fastOutSlowIn,
                               enableInfiniteScroll: true,
-                              autoPlayAnimationDuration: Duration(milliseconds: 500),
+                              autoPlayAnimationDuration: Duration(milliseconds: 1000),
                               autoPlayInterval: Duration(milliseconds: 1500),
                               scrollPhysics: BouncingScrollPhysics(),
-                              viewportFraction: 0.7
+                              viewportFraction: 0.9
                           )
                       ),
-                      // CarouselSlider(
-                      //     items: [
-                      //       Container(
-                      //         margin: EdgeInsets.all(6.0),
-                      //         decoration: BoxDecoration(
-                      //           color: Colors.transparent,
-                      //           image: DecorationImage(
-                      //             image: AssetImage(airnav),
-                      //             fit: BoxFit.fill,
-                      //           ),
-                      //         ),
-                      //       ),
-                      //       SvgPicture.asset(alfamart,fit: BoxFit.fill,width: 100,height: 100,),
-                      //       Container(
-                      //         margin: EdgeInsets.all(6.0),
-                      //         decoration: BoxDecoration(
-                      //           color: Colors.transparent,
-                      //           image: DecorationImage(
-                      //             image: AssetImage(baf),
-                      //             fit: BoxFit.fill,
-                      //           ),
-                      //         ),
-                      //       ),
-                      //       Container(
-                      //         margin: EdgeInsets.all(6.0),
-                      //         decoration: BoxDecoration(
-                      //           color: Colors.transparent,
-                      //           image: DecorationImage(
-                      //             image: AssetImage(banknagari),
-                      //             fit: BoxFit.fill,
-                      //           ),
-                      //         ),
-                      //       ),
-                      //       Container(
-                      //         margin: EdgeInsets.all(6.0),
-                      //         decoration: BoxDecoration(
-                      //           color: Colors.transparent,
-                      //           image: DecorationImage(
-                      //             image: AssetImage(bankpermata),
-                      //             fit: BoxFit.fill,
-                      //           ),
-                      //         ),
-                      //       ),
-                      //       Container(
-                      //         margin: EdgeInsets.all(6.0),
-                      //         decoration: BoxDecoration(
-                      //           color: Colors.transparent,
-                      //           image: DecorationImage(
-                      //             image: AssetImage(bca),
-                      //             fit: BoxFit.fill,
-                      //           ),
-                      //         ),
-                      //       ),
-                      //       Container(
-                      //         margin: EdgeInsets.all(6.0),
-                      //         decoration: BoxDecoration(
-                      //           color: Colors.transparent,
-                      //           image: DecorationImage(
-                      //             image: AssetImage(cimbniaga),
-                      //             fit: BoxFit.fill,
-                      //           ),
-                      //         ),
-                      //       ),
-                      //       SvgPicture.asset(danamon,fit: BoxFit.fill,width: 100,height: 100,),
-                      //       Container(
-                      //         margin: EdgeInsets.all(6.0),
-                      //         decoration: BoxDecoration(
-                      //           color: Colors.transparent,
-                      //           image: DecorationImage(
-                      //             image: AssetImage(freeport),
-                      //             fit: BoxFit.fill,
-                      //           ),
-                      //         ),
-                      //       ),
-                      //       Container(
-                      //         margin: EdgeInsets.all(6.0),
-                      //         decoration: BoxDecoration(
-                      //           color: Colors.transparent,
-                      //           image: DecorationImage(
-                      //             image: AssetImage(kai),
-                      //             fit: BoxFit.fill,
-                      //           ),
-                      //         ),
-                      //       ),
-                      //       Container(
-                      //         margin: EdgeInsets.all(6.0),
-                      //         decoration: BoxDecoration(
-                      //           color: Colors.transparent,
-                      //           image: DecorationImage(
-                      //             image: AssetImage(lionair),
-                      //             fit: BoxFit.fill,
-                      //           ),
-                      //         ),
-                      //       ),
-                      //       Container(
-                      //         margin: EdgeInsets.all(6.0),
-                      //         decoration: BoxDecoration(
-                      //           color: Colors.transparent,
-                      //           image: DecorationImage(
-                      //             image: AssetImage(mercedes),
-                      //             fit: BoxFit.fill,
-                      //           ),
-                      //         ),
-                      //       ),
-                      //       Container(
-                      //         margin: EdgeInsets.all(6.0),
-                      //         decoration: BoxDecoration(
-                      //           color: Colors.transparent,
-                      //           image: DecorationImage(
-                      //             image: AssetImage(nutrifood),
-                      //             fit: BoxFit.fill,
-                      //           ),
-                      //         ),
-                      //       ),
-                      //       Container(
-                      //         margin: EdgeInsets.all(6.0),
-                      //         decoration: BoxDecoration(
-                      //           color: Colors.transparent,
-                      //           image: DecorationImage(
-                      //             image: AssetImage(pertamina),
-                      //             fit: BoxFit.cover,
-                      //           ),
-                      //         ),
-                      //       ),
-                      //       Container(
-                      //         margin: EdgeInsets.all(6.0),
-                      //         decoration: BoxDecoration(
-                      //           color: Colors.transparent,
-                      //           image: DecorationImage(
-                      //             image: AssetImage(siloam),
-                      //             fit: BoxFit.fill,
-                      //           ),
-                      //         ),
-                      //       ),
-                      //       Container(
-                      //         margin: EdgeInsets.all(6.0),
-                      //         decoration: BoxDecoration(
-                      //           color: Colors.transparent,
-                      //           image: DecorationImage(
-                      //             image: AssetImage(sumselbabel),
-                      //             fit: BoxFit.fill,
-                      //           ),
-                      //         ),
-                      //       ),
-                      //       Container(
-                      //         margin: EdgeInsets.all(6.0),
-                      //         decoration: BoxDecoration(
-                      //           color: Colors.transparent,
-                      //           image: DecorationImage(
-                      //             image: AssetImage(wilmar),
-                      //             fit: BoxFit.fill,
-                      //           ),
-                      //         ),
-                      //       ),
-                      //     ],
-                      //     options: CarouselOptions(
-                      //         height: 180,
-                      //         enlargeCenterPage: false,
-                      //         autoPlay: true,
-                      //         aspectRatio: 16/9,
-                      //         autoPlayCurve: Curves.fastOutSlowIn,
-                      //         enableInfiniteScroll: true,
-                      //         autoPlayAnimationDuration: Duration(milliseconds: 500),
-                      //         autoPlayInterval: Duration(milliseconds: 1500),
-                      //         scrollPhysics: BouncingScrollPhysics(),
-                      //         viewportFraction: 0.7
-                      //     )
-                      // )
                     ],
                   )
-                // StaggeredGridView.countBuilder(
-                //     crossAxisCount: 2,
-                //     crossAxisSpacing: 10,
-                //     mainAxisSpacing: 12,
-                //     itemCount: imageList.length,
-                //     itemBuilder: (context, index){
-                //       return Container(
-                //         decoration: BoxDecoration(
-                //           color: Colors.transparent,
-                //           borderRadius: BorderRadius.all(Radius.circular(15))
-                //         ),
-                //         child: ClipRRect(
-                //           borderRadius: BorderRadius.all(Radius.circular(15)),
-                //           child: FadeInImage.memoryNetwork(
-                //               placeholder: kTransparentImage,
-                //               image: imageList[index],
-                //               fit: BoxFit.fill,
-                //           ),
-                //         ),
-                //       );
-                //     },
-                //     staggeredTileBuilder: (index){
-                //       return StaggeredTile.count(1, index.isEven ? 1.2 : 1.8);
-                //     }
-                // )
               ),
             ],
           ),
