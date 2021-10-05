@@ -1,0 +1,80 @@
+name: wise_oms
+description: Flutter OMS for WISE
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  #Library
+  cupertino_icons: ^1.0.2
+  shared_preferences: ^2.0.8
+  flutter_svg: ^0.22.0
+  responsive_builder: ^0.4.1
+  ionicons: ^0.1.2
+  provider: ^6.0.0
+  cool_alert: ^1.1.0
+  badges: ^2.0.1
+  syncfusion_flutter_gauges: ^19.2.62
+  google_nav_bar: ^5.0.5
+  fl_chart: ^0.40.0
+  smooth_page_indicator: ^1.0.0+2
+  settings_ui: ^1.0.0
+  lottie: ^1.2.0
+  http: ^0.13.3
+  connectivity: ^3.0.6
+  carousel_slider: ^4.0.0
+  local_auth: ^1.1.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_native_splash: ^1.2.3
+
+flutter_native_splash:
+  color: "#FFFFFF"
+  color_dark: "#FFFFFF"
+  android: true
+  ios: true
+  web: false
+  image: assets/images/logowisetext.png
+  image_dark: assets/images/logowisetext.png
+  android_gravity: center
+  fullscreen: false
+#  background_image: "assets/images/bgsplash.png"
+  # To enable support for Android 12, set the following parameter to true.  Defaults to false.
+#  android12: true
+  #background_image_dark: "assets/dark-background.png"
+
+  #ios_content_mode: center
+  #web_image_mode: center
+
+  #info_plist_files:
+  #  - 'ios/Runner/Info-Debug.plist'
+  #  - 'ios/Runner/Info-Release.plist'
+
+  flutter_lints: ^1.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/lottie/
+    - assets/logos/
+
+  fonts:
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/MontserratAlternates-Regular.ttf
+
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-Regular.ttf
+        - asset: assets/fonts/Poppins-Thin.ttf
