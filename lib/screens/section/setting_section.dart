@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
@@ -8,6 +10,7 @@ import 'package:wise_oms/core/navigation.dart';
 import 'package:wise_oms/screens/login/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wise_oms/screens/splash/splash_screen.dart';
+import 'package:http/http.dart' as http;
 
 class SettingSection extends StatefulWidget {
   const SettingSection({Key? key}) : super(key: key);
@@ -54,11 +57,48 @@ class SettingContent extends StatefulWidget {
 }
 class _SettingContentState extends State<SettingContent> {
   bool isSwitched = false;
+  final _formKeyMsg = GlobalKey<FormState>();
+  final emailController = TextEditingController();
+  final msgController = TextEditingController();
+  final maxLines = 5;
+  bool? error,sending,success;
+  String? msg;
 
   Future<bool> saveSwitchState(bool value) async {
     SharedPreferences prefFinger = await SharedPreferences.getInstance();
     prefFinger.setBool('biometric', value);
     return prefFinger.setBool('biometric', value);
+  }
+
+  Future<List?> sendMsg() async {
+    final response = await http.post(Uri.parse("https://wiseoms.000webhostapp.com/api/insertComment.php"),body: {
+      "email": emailController.text,
+      "msg": msgController.text,
+    });
+
+    if(response.statusCode == 200){
+      var data = jsonDecode(response.body);
+      if(data["error"]){
+        setState(() {
+          sending = false;
+          error = true;
+          msg = data["message"];//from server
+        });
+      } else {
+        emailController.text = "";
+        msgController.text = "";
+        setState(() {
+          sending = false;
+          success = true;
+        });
+      }
+    } else {
+      setState(() {
+        error = true;
+        msg = "Error during send data";
+        sending = false;
+      });
+    }
   }
 
   getSwitchValue() async {
@@ -76,6 +116,10 @@ class _SettingContentState extends State<SettingContent> {
   void initState() {
     super.initState();
     getSwitchValue();
+    error = false;
+    sending = false;
+    success = false;
+    msg = "";
   }
 
   @override
@@ -151,7 +195,104 @@ class _SettingContentState extends State<SettingContent> {
               title: 'Contact Us',
               leading: Icon(CupertinoIcons.mail_solid),
               onPressed: (BuildContext context) {
-                _contactContentDialog(context);
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Text('Tell us'),
+                        scrollable: true,
+                        contentPadding: EdgeInsets.all(20.0),
+                        content: Form(
+                          key: _formKeyMsg,
+                          child: Column(
+                            children: [
+                              TextFormField(
+                                validator: (value) {
+                                  if(value!.isEmpty){
+                                    return 'Please enter your e-mail';
+                                  }
+                                  return null;
+                                },
+                                controller: emailController,
+                                enableSuggestions: false,
+                                textCapitalization: TextCapitalization.none,
+                                showCursor: true,
+                                scrollPhysics: BouncingScrollPhysics(),
+                                style: TextStyle(
+                                    color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                                    fontSize: 12
+                                ),
+                                decoration: InputDecoration(
+                                  labelStyle: TextStyle(
+                                    color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors. black,
+                                  ),
+                                  labelText: 'Your email',
+                                  icon: Icon(
+                                      CupertinoIcons.forward,
+                                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
+                                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors. black)),
+                                ),
+                              ),
+                              Container(
+                                height: maxLines * 24.0,
+                                child: TextFormField(
+                                  validator: (value) {
+                                    if(value!.isEmpty){
+                                      return 'Please enter your message';
+                                    }
+                                    return null;
+                                  },
+                                  maxLines: maxLines * 2,
+                                  controller: msgController,
+                                  enableSuggestions: false,
+                                  textCapitalization: TextCapitalization.none,
+                                  showCursor: true,
+                                  scrollPhysics: BouncingScrollPhysics(),
+                                  style: TextStyle(
+                                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                                      fontSize: 12
+                                  ),
+                                  decoration: InputDecoration(
+                                    labelStyle: TextStyle(
+                                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors. black,
+                                    ),
+                                    labelText: 'Your text',
+                                    icon: Icon(
+                                        CupertinoIcons.forward,
+                                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
+                                    focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors. black)),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        actions: [
+                          ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              primary: Theme.of(context).scaffoldBackgroundColor,
+                              elevation: 4.0,
+                              textStyle: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.grey.shade800),
+                            ),
+                            icon: Icon(
+                              CupertinoIcons.arrow_right_circle_fill,
+                              color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.grey.shade800,
+                            ),
+                            onPressed: (){
+                              if(_formKeyMsg.currentState!.validate()) {
+                                FocusManager.instance.primaryFocus?.unfocus();
+                                setState(() {
+                                  sending = true;
+                                });
+                                sendMsg();
+                              }
+                            },
+                            label: Text(sending! ? 'Sending...' : 'Send', style: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.grey.shade800),),
+                          ),
+                        ],
+                      );
+                    }
+                );
               },
             ),
           ],
@@ -159,106 +300,4 @@ class _SettingContentState extends State<SettingContent> {
       ],
     );
   }
-}
-
-Future<void> _contactContentDialog(BuildContext context) async {
-  final _formKeyMsg = GlobalKey<FormState>();
-  final emailController = TextEditingController();
-  final msgController = TextEditingController();
-  final maxLines = 5;
-
-  return showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('What is your problem(s)?'),
-          scrollable: true,
-          contentPadding: EdgeInsets.all(20.0),
-          content: Form(
-            key: _formKeyMsg,
-            child: Column(
-              children: [
-                TextFormField(
-                  validator: (value) {
-                    if(value!.isEmpty){
-                      return 'Please enter your e-mail';
-                    }
-                    return null;
-                  },
-                  controller: emailController,
-                  enableSuggestions: false,
-                  textCapitalization: TextCapitalization.none,
-                  showCursor: true,
-                  scrollPhysics: BouncingScrollPhysics(),
-                  style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
-                      fontSize: 12
-                  ),
-                  decoration: InputDecoration(
-                    labelStyle: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors. black,
-                    ),
-                    labelText: 'Your email',
-                    icon: Icon(
-                        CupertinoIcons.forward,
-                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
-                    focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors. black)),
-                  ),
-                ),
-                Container(
-                  height: maxLines * 24.0,
-                  child: TextFormField(
-                    validator: (value) {
-                      if(value!.isEmpty){
-                        return 'Please enter your message';
-                      }
-                      return null;
-                    },
-                    maxLines: maxLines * 2,
-                    controller: msgController,
-                    enableSuggestions: false,
-                    textCapitalization: TextCapitalization.none,
-                    showCursor: true,
-                    scrollPhysics: BouncingScrollPhysics(),
-                    style: TextStyle(
-                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
-                        fontSize: 12
-                    ),
-                    decoration: InputDecoration(
-                      labelStyle: TextStyle(
-                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors. black,
-                      ),
-                      labelText: 'Your text',
-                      icon: Icon(
-                          CupertinoIcons.forward,
-                          color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
-                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors. black)),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                primary: Theme.of(context).scaffoldBackgroundColor,
-                elevation: 4.0,
-                textStyle: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.grey.shade800),
-              ),
-              icon: Icon(
-                CupertinoIcons.arrow_right_circle_fill,
-                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.grey.shade800,
-              ),
-              onPressed: (){
-                if(_formKeyMsg.currentState!.validate()) {
-                  FocusManager.instance.primaryFocus?.unfocus();
-                }
-              },
-              label: Text('Send', style: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.grey.shade800),),
-            ),
-          ],
-        );
-      }
-  );
 }
