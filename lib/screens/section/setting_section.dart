@@ -59,26 +59,26 @@ class SettingContent extends StatefulWidget {
 class _SettingContentState extends State<SettingContent> with TickerProviderStateMixin {
   bool isSwitched = false;
 
-  Future<bool> saveSwitchState(bool value) async {
-    SharedPreferences prefFinger = await SharedPreferences.getInstance();
-    prefFinger.setBool('biometric', value);
-    return prefFinger.setBool('biometric', value);
-  }
-  getSwitchValue() async {
-    isSwitched = await getSwitchState();
-    setState(() {});
-  }
-  Future<bool> getSwitchState() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    bool isSwitched = pref.getBool("biometric")!;
-    return isSwitched;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getSwitchValue();
-  }
+  // Future<bool> saveSwitchState(bool value) async {
+  //   SharedPreferences prefFinger = await SharedPreferences.getInstance();
+  //   prefFinger.setBool('biometric', value);
+  //   return prefFinger.setBool('biometric', value);
+  // }
+  // getSwitchValue() async {
+  //   isSwitched = await getSwitchState();
+  //   setState(() {});
+  // }
+  // Future<bool> getSwitchState() async {
+  //   SharedPreferences pref = await SharedPreferences.getInstance();
+  //   bool isSwitched = pref.getBool("biometric")!;
+  //   return isSwitched;
+  // }
+  //
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   getSwitchValue();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -87,25 +87,6 @@ class _SettingContentState extends State<SettingContent> with TickerProviderStat
       darkBackgroundColor: Colors.grey.shade800,
       lightBackgroundColor: Colors.white,
       sections: [
-        SettingsSection(
-          titlePadding: EdgeInsets.all(20),
-          title: 'Privacy',
-          tiles: [
-            SettingsTile.switchTile(
-              title: 'Fingerprint',
-              subtitle: 'Using yours biometric for some Act',
-              subtitleTextStyle: TextStyle(fontSize: 10),
-              leading: Icon(Ionicons.finger_print),
-              switchValue: isSwitched,
-              onToggle: (value) {
-                setState(() {
-                  isSwitched = value;
-                  saveSwitchState(value);
-                });
-              },
-            ),
-          ],
-        ),
         SettingsSection(
           titlePadding: EdgeInsets.all(20),
           title: 'General',
