@@ -10,14 +10,12 @@ void main() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.dark,
-    systemNavigationBarColor:
-    MediaQueryData.fromWindow(WidgetsBinding.instance!.window).platformBrightness == Brightness.dark
-        ? Colors.transparent : Colors.white,
-    systemNavigationBarContrastEnforced: true,
     systemNavigationBarDividerColor: Colors.transparent,
-    systemNavigationBarIconBrightness:
-    MediaQueryData.fromWindow(WidgetsBinding.instance!.window).platformBrightness == Brightness.dark
-        ? Brightness.light : Brightness.dark,
+    systemNavigationBarColor: Colors.white,
+    systemNavigationBarContrastEnforced: true,
+    systemNavigationBarIconBrightness: Brightness.dark
+    // MediaQueryData.fromWindow(WidgetsBinding.instance!.window).platformBrightness == Brightness.dark
+    //     ? Brightness.light : Brightness.dark,
   ));
   runApp(const MainApp());
 }
@@ -34,9 +32,9 @@ class _MainAppState extends State<MainApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.system,
+      themeMode: ThemeMode.light,
       theme: MyThemes.lightTheme,
-      darkTheme: MyThemes.darkTheme,
+      darkTheme: MyThemes.lightTheme,
       home: const CheckUserLogin(),
     );
   }
