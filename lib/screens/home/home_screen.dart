@@ -15,6 +15,7 @@ class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
+
 class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin{
   late final AnimationController _animationController;
   int _currentIndex = 0;

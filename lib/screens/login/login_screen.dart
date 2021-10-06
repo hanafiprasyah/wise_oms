@@ -14,7 +14,6 @@ class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
-
 class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
   bool isLogin = true;
   bool _visibleLogin = true;
@@ -143,8 +142,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                 const SizedBox(height: 20,),
                                 ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    primary: MediaQuery.of(context).platformBrightness == Brightness.dark
-                                        ? Colors.white : Colors.black,
+                                    primary: Theme.of(context).scaffoldBackgroundColor,
                                     padding: EdgeInsets.symmetric(vertical: 15, horizontal: MediaQuery.of(context).size.width * 0.2),
                                     animationDuration: Duration(milliseconds: 400),
                                     elevation: 8.0,
@@ -156,7 +154,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                     };
                                   },
                                   child: Text('LOGIN', style: TextStyle(
-                                      fontSize: 14
+                                      fontSize: 14,
+                                      color: Colors.black,
+                                      letterSpacing: 2.0
                                   )),
                                 ),
                                 const SizedBox(height: 20,),

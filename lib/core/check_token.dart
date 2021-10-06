@@ -13,9 +13,7 @@ class CheckUserLogin extends StatefulWidget {
   @override
   _CheckUserLoginState createState() => _CheckUserLoginState();
 }
-
 class _CheckUserLoginState extends State<CheckUserLogin> {
-
   StreamSubscription? sub;
   bool isConnected = false;
 
@@ -31,7 +29,7 @@ class _CheckUserLoginState extends State<CheckUserLogin> {
     return Container(
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
-      color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade800 : Colors.white,
+      color: Colors.white,
       child: Center(
         child: Visibility(
             visible: _indicatorLoading,
