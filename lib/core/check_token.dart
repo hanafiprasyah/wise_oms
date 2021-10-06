@@ -40,7 +40,7 @@ class _CheckUserLoginState extends State<CheckUserLogin> {
             maintainSize: true,
             child: CupertinoActivityIndicator(animating: true)
         ),
-      ),
+      )
     );
   }
 
