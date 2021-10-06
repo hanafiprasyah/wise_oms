@@ -17,13 +17,6 @@ class _CheckUserLoginState extends State<CheckUserLogin> {
   StreamSubscription? sub;
   bool isConnected = false;
 
-  bool _indicatorLoading = true;
-  void hideIndicator(){
-    setState(() {
-      _indicatorLoading = false;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -31,13 +24,7 @@ class _CheckUserLoginState extends State<CheckUserLogin> {
       height: MediaQuery.of(context).size.height,
       color: Colors.white,
       child: Center(
-        child: Visibility(
-            visible: _indicatorLoading,
-            maintainState: true,
-            maintainAnimation: true,
-            maintainSize: true,
-            child: CupertinoActivityIndicator(animating: true)
-        ),
+        child: CupertinoActivityIndicator(animating: true)
       )
     );
   }
@@ -65,10 +52,8 @@ class _CheckUserLoginState extends State<CheckUserLogin> {
     SharedPreferences pref = await SharedPreferences.getInstance();
     var val =  pref.getString('login');
     if(val != null){
-      hideIndicator();
       navigateAndRemove(context, const HomeScreen());
     } else {
-      hideIndicator();
       navigateAndRemove(context, const LoginScreen());
     }
   }

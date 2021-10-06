@@ -20,7 +20,7 @@ void navigateReplace(BuildContext context, Widget screen) {
 
 void navigateAndRemove(BuildContext context, Widget screen){
   Navigator.of(context).pushAndRemoveUntil(PageRouteBuilder(
-    transitionDuration: const Duration(milliseconds: 550),
+    transitionDuration: const Duration(milliseconds: 800),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       return FadeTransition(
         opacity: Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
