@@ -93,14 +93,14 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                     controller: usernameTextController,
                                     textCapitalization: TextCapitalization.none,
                                     style: TextStyle(
-                                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                                        color: Colors.black,
                                         fontSize: 14
                                     ),
                                     decoration: InputDecoration(
-                                      icon: Icon(CupertinoIcons.person,color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,),
+                                      icon: Icon(CupertinoIcons.person,color: Colors.black,),
                                       labelText: 'Username',
-                                      labelStyle: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors. black),
-                                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors. black)),
+                                      labelStyle: TextStyle(color: Colors. black),
+                                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors. black)),
                                     ),
                                   ),
                                 ),
@@ -117,32 +117,32 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                     controller: passwordTextController,
                                     textCapitalization: TextCapitalization.none,
                                     style: TextStyle(
-                                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                                        color: Colors.black,
                                         fontSize: 14
                                     ),
                                     obscureText: !_visibleLogin,
                                     decoration: InputDecoration(
                                       labelStyle: TextStyle(
-                                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors. black,
+                                        color: Colors. black,
                                       ),
                                       labelText: 'Password',
                                       icon: Icon(
                                           CupertinoIcons.lock,
-                                          color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
+                                          color: Colors.black),
                                       suffixIcon: IconButton(
-                                        icon: Icon(_visibleLogin ? CupertinoIcons.eye_fill : CupertinoIcons.eye_slash_fill,color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,),
+                                        icon: Icon(_visibleLogin ? CupertinoIcons.eye_fill : CupertinoIcons.eye_slash_fill,color: Colors.black,),
                                         onPressed: (){
                                           _togglePasswordLogin();
                                         },
                                       ),
-                                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors. black)),
+                                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors. black)),
                                     ),
                                   ),
                                 ),
                                 const SizedBox(height: 20,),
                                 ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    primary: Theme.of(context).scaffoldBackgroundColor,
+                                    primary: Colors.black,
                                     padding: EdgeInsets.symmetric(vertical: 15, horizontal: MediaQuery.of(context).size.width * 0.2),
                                     animationDuration: Duration(milliseconds: 400),
                                     elevation: 8.0,
@@ -155,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                   },
                                   child: Text('LOGIN', style: TextStyle(
                                       fontSize: 14,
-                                      color: Colors.black,
+                                      color: Colors.white,
                                       letterSpacing: 2.0
                                   )),
                                 ),
@@ -228,14 +228,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(message, style: TextStyle(
-                  color: Theme
-                      .of(context)
-                      .brightness == Brightness.dark ? Colors.black : Colors
-                      .white
+                  color: Colors.white
               ),),
-              backgroundColor: Theme
-                  .of(context)
-                  .brightness == Brightness.dark ? Colors.white : Colors.black,
+              backgroundColor: Colors.black,
               duration: Duration(milliseconds: 800),
             )
         );
@@ -246,9 +241,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text("You are not the valid user!",style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white
+                  color: Colors.white
               ),),
-              backgroundColor: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+              backgroundColor: Colors.black,
               duration: Duration(milliseconds: 1500),
             )
         );

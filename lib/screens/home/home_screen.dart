@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     getCredential();
     _animationController = AnimationController(
         vsync: this,
-        duration: const Duration(milliseconds: 1500)
+        duration: const Duration(milliseconds: 1000)
     );
     _animationController.forward();
   }
@@ -63,65 +63,52 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           if(size.deviceScreenType == DeviceScreenType.mobile){
             return OrientationLayoutBuilder(
                 portrait: (_) => Scaffold(
-                    extendBody: true,
                     bottomNavigationBar: Container(
-                      decoration: BoxDecoration(
-                        color: MediaQuery.of(context).platformBrightness == Brightness.dark
-                            ? Colors.black : Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            blurRadius: 20,
-                            color: MediaQuery.of(context).platformBrightness == Brightness.dark
-                                ? Colors.black.withOpacity(.1) : Colors.white.withOpacity(.1),
-                          )
-                        ],
-                      ),
-                      child: SafeArea(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
-                          child: GNav(
-                            rippleColor: Colors.grey[300]!,
-                            hoverColor: Colors.grey[100]!,
-                            gap: 8,
-                            backgroundColor: Colors.transparent,
-                            activeColor: MediaQuery.of(context).platformBrightness == Brightness.dark
-                                ? Colors.black : Colors.white,
-                            iconSize: 24,
-                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                            duration: Duration(milliseconds: 500),
-                            tabBackgroundColor: MediaQuery.of(context).platformBrightness == Brightness.dark
-                                ? Colors.white : Colors.black,
-                            color: MediaQuery.of(context).platformBrightness == Brightness.dark
-                                ? Colors.grey[500] : Colors.black,
-                            tabs: [
-                              GButton(
-                                icon: Ionicons.home_outline,
-                                text: 'Home',
-                              ),
-                              GButton(
-                                icon: Ionicons.analytics,
-                                text: 'Quality',
-                              ),
-                              GButton(
-                                icon: CupertinoIcons.bolt,
-                                text: 'Usage',
-                              ),
-                              GButton(
-                                icon: CupertinoIcons.settings,
-                                text: 'Settings',
-                              ),
-                            ],
-                            selectedIndex: _currentIndex,
-                            onTabChange: _onTapNavbar,
-                            textStyle: TextStyle(color: MediaQuery.of(context).platformBrightness == Brightness.dark
-                                ? Colors.black : Colors.white),
-                          ),
+                      color: Colors.white,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+                        child: GNav(
+                          hoverColor: Colors.white,
+                          gap: 10,
+                          backgroundColor: Colors.white,
+                          activeColor: Colors.black,
+                          iconSize: 24,
+                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          duration: Duration(milliseconds: 1000),
+                          tabBackgroundColor: Colors.white,
+                          color: Colors.black,
+                          tabs: [
+                            GButton(
+                              icon: Ionicons.home_outline,
+                              text: 'Home',
+                              textColor: Colors.black,
+                              // iconActiveColor: Colors.black,
+                            ),
+                            GButton(
+                              icon: Ionicons.analytics,
+                              text: 'Quality',
+                              textColor: Colors.black,
+                              // iconActiveColor: Colors.black,
+                            ),
+                            GButton(
+                              icon: CupertinoIcons.bolt,
+                              text: 'Usage',
+                              textColor: Colors.black,
+                              // iconActiveColor: Colors.black,
+                            ),
+                            GButton(
+                              icon: CupertinoIcons.settings,
+                              text: 'Settings',
+                              textColor: Colors.black,
+                              // iconActiveColor: Colors.black,
+                            ),
+                          ],
+                          selectedIndex: _currentIndex,
+                          onTabChange: _onTapNavbar,
                         ),
                       ),
                     ),
-                    body: Center(
-                      child: _section.elementAt(_currentIndex),
-                    ),
+                    body: _section.elementAt(_currentIndex),
                 )
             );
           }

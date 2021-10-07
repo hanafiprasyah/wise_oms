@@ -3,6 +3,7 @@ import 'package:ionicons/ionicons.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:badges/badges.dart';
+import 'package:wise_oms/core/navigation.dart';
 import 'package:wise_oms/screens/manual_user.dart';
 import 'package:wise_oms/screens/notification/notif_screen.dart';
 import 'package:wise_oms/screens/tips_trik.dart';
@@ -21,47 +22,27 @@ class _HomeSectionState extends State<HomeSection> {
           if(size.deviceScreenType == DeviceScreenType.mobile){
             return OrientationLayoutBuilder(
                 portrait: (_) => Scaffold(
-                  resizeToAvoidBottomInset: false,
                   appBar: AppBar(
-                    backgroundColor: Colors.transparent,
-                    automaticallyImplyLeading: true,
+                    backgroundColor: Colors.white,
                     leading: Badge(
                       position: BadgePosition.topEnd(top: 5, end: 5),
-                      badgeContent: Text('0',style: TextStyle(color: MediaQuery.of(context).platformBrightness == Brightness.dark
-                          ? Colors.black : Colors.white),),
+                      badgeContent: Text('0',style: TextStyle(color: Colors.white),),
                       animationType: BadgeAnimationType.scale,
                       showBadge: true,
                       toAnimate: true,
-                      badgeColor: MediaQuery.of(context).platformBrightness == Brightness.dark
-                          ? Colors.white : Colors.black,
+                      badgeColor: Colors.black,
                       child: IconButton(
-                        icon: Icon(Ionicons.notifications_outline, color: MediaQuery.of(context).platformBrightness == Brightness.dark
-                            ? Colors.white : Colors.black,),
+                        icon: Icon(Ionicons.notifications_outline, color: Colors.black,),
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(
-                              builder: (_) => const NotificationScreen()
-                          ));
+                          navigateTo(context, NotificationScreen());
                         },
                       ),
                     ),
-                    title: Text(GreetingToUser.showGreetings(),style: TextStyle(
-                        fontFamily: 'Montserrat',
-                        color: MediaQuery.of(context).platformBrightness == Brightness.dark
-                        ? Colors.white : Colors.black
-                    ),),
-                    actions: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
-                        child: Hero(
-                            tag: 'wiselogo',
-                            child: Image.asset('assets/images/logowise.png',width: 32,height: 32)
-                        ),
-                      ),
-                    ],
-                    bottomOpacity: 0,
+                    flexibleSpace: SizedBox(height: 20,),
+                    title: Text(GreetingToUser.showGreetings()),
                     elevation: 0,
                     centerTitle: true,
-                    titleTextStyle: TextStyle(fontSize: 18),
+                    titleTextStyle: TextStyle(fontSize: 18,fontFamily: 'Montserrat',color: Colors.black),
                   ),
                   body: const HomeContent(),
                 )
@@ -84,25 +65,6 @@ class _HomeSectionState extends State<HomeSection> {
               child: Text("Error : Please call the developer ASAP. Email : prasyah1998@gmail.com"),),);
         }
     );
-  }
-}
-
-class GreetingToUser {
-  static String showGreetings() {
-    String greeting() {
-      var timeNow = DateTime.now().hour;
-      if (timeNow <= 12) {
-        return 'Good Morning';
-      } else if ((timeNow > 12) && (timeNow <= 16)) {
-        return 'Good Afternoon';
-      } else if ((timeNow > 16) && (timeNow <= 20)) {
-        return 'Good Evening';
-      } else {
-        return 'Good Night';
-      }
-    }
-
-    return greeting();
   }
 }
 
@@ -199,7 +161,7 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 1)
+      duration: const Duration(milliseconds: 750)
     );
 
     //initialising the animation
@@ -270,136 +232,111 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        //centered container
-        heightFactor: 1,
+      body: SafeArea(
+        maintainBottomViewPadding: true,
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                //Content 1
-                SlideTransition(
-                  position: _slideAnimationBoxOne!,
-                  child: FadeTransition(
-                    opacity: _fadeAnimationOne!,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: 200,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colors.transparent
-                      ),
-                      child: Stack(
-                        children: [
-                          PageView.builder(
-                            scrollDirection: Axis.horizontal,
-                            pageSnapping: true,
-                            physics: BouncingScrollPhysics(),
-                            controller: _pageController1,
-                            itemCount: _pages.length,
-                            itemBuilder: (context, index){
-                              return Transform(
-                                  transform: Matrix4.identity()..rotateX(currentPageValue!-index),
-                                  child: _pages[index % _pages.length]
-                              );
-                            },
-                            // children: [
-                            //   //A
-                            //   SlideTransition(
-                            //     position: _slideAnimationBoxOne!,
-                            //     child: FadeTransition(
-                            //       opacity: _fadeAnimationOne!,
-                            //       child: Container(
-                            //         width: MediaQuery.of(context).size.width,
-                            //         height: 100,
-                            //         child: const Center(child: Text("Content A")),
-                            //       ),
-                            //     ),
-                            //   ),
-                            //   //B
-                            //   SlideTransition(
-                            //     position: _slideAnimationBoxOne!,
-                            //     child: FadeTransition(
-                            //       opacity: _fadeAnimationOne!,
-                            //       child: Container(
-                            //         width: MediaQuery.of(context).size.width,
-                            //         height: 100,
-                            //         child: const Center(child: Text("Content B")),
-                            //       ),
-                            //     ),
-                            //   ),
-                            //   //C
-                            //   SlideTransition(
-                            //     position: _slideAnimationBoxOne!,
-                            //     child: FadeTransition(
-                            //       opacity: _fadeAnimationOne!,
-                            //       child: Container(
-                            //         width: MediaQuery.of(context).size.width,
-                            //         height: 100,
-                            //         child: const Center(child: Text("Content C")),
-                            //       ),
-                            //     ),
-                            //   ),
-                            // ],
-                          ),
-                          Positioned(
-                            bottom: 0.0,
-                            left: 0.0,
-                            right: 0.0,
-                            child: Container(
-                              color: Colors.grey[800]!.withOpacity(0.5),
-                              padding: const EdgeInsets.all(20.0),
-                              child: Center(
-                                  child: SmoothPageIndicator(
-                                    controller: _pageController1,
-                                    axisDirection: Axis.horizontal,
-                                    count: 2,
-                                    effect: JumpingDotEffect(
-                                      spacing: 16.0,
-                                      activeDotColor: Colors.white,
-                                      dotHeight: 2,
-                                      dotWidth: 20,
-                                      jumpScale: .2,
-                                      verticalOffset: 1,
-                                    ),
-                                  )
-                              ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              //Content 1
+              SlideTransition(
+                position: _slideAnimationBoxOne!,
+                child: FadeTransition(
+                  opacity: _fadeAnimationOne!,
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: 200,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.transparent
+                    ),
+                    child: Stack(
+                      children: [
+                        PageView.builder(
+                          scrollDirection: Axis.horizontal,
+                          pageSnapping: true,
+                          physics: BouncingScrollPhysics(),
+                          controller: _pageController1,
+                          itemCount: _pages.length,
+                          itemBuilder: (context, index){
+                            return Transform(
+                                transform: Matrix4.identity()..rotateX(currentPageValue!-index),
+                                child: _pages[index % _pages.length]
+                            );
+                          },
+                        ),
+                        Positioned(
+                          bottom: 0.0,
+                          left: 0.0,
+                          right: 0.0,
+                          child: Container(
+                            color: Colors.grey[800]!.withOpacity(0.5),
+                            padding: const EdgeInsets.all(20.0),
+                            child: Center(
+                                child: SmoothPageIndicator(
+                                  controller: _pageController1,
+                                  axisDirection: Axis.horizontal,
+                                  count: 2,
+                                  effect: JumpingDotEffect(
+                                    spacing: 16.0,
+                                    activeDotColor: Colors.white,
+                                    dotHeight: 2,
+                                    dotWidth: 20,
+                                    jumpScale: .2,
+                                    verticalOffset: 1,
+                                  ),
+                                )
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 40),
-                //Content 2
-                SlideTransition(
-                  position: _slideAnimationBoxTwo!,
-                  child: FadeTransition(
+              ),
+              const SizedBox(height: 40),
+              //Content 2
+              SlideTransition(
+                position: _slideAnimationBoxTwo!,
+                child: FadeTransition(
                     opacity: _fadeAnimationOne!,
                     child: Container(color: Colors.greenAccent,height: 100,width: MediaQuery.of(context).size.width,)
-                  ),
                 ),
-                const SizedBox(height: 20),
-                //Content 3
-                SlideTransition(
-                  position: _slideAnimationBoxThree!,
-                  child: FadeTransition(
+              ),
+              const SizedBox(height: 20),
+              //Content 3
+              SlideTransition(
+                position: _slideAnimationBoxThree!,
+                child: FadeTransition(
                     opacity: _fadeAnimationTwo!,
                     child: Container(color: Colors.greenAccent,height: 100,width: MediaQuery.of(context).size.width,)
-                  ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
-      ),
+      )
     );
   }
 }
 
+class GreetingToUser {
+  static String showGreetings() {
+    String greeting() {
+      var timeNow = DateTime.now().hour;
+      if (timeNow <= 12) {
+        return 'Good Morning';
+      } else if ((timeNow > 12) && (timeNow <= 16)) {
+        return 'Good Afternoon';
+      } else if ((timeNow > 16) && (timeNow <= 20)) {
+        return 'Good Evening';
+      } else {
+        return 'Good Night';
+      }
+    }
 
+    return greeting();
+  }
+}
