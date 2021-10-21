@@ -64,7 +64,22 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             return OrientationLayoutBuilder(
                 portrait: (_) => Scaffold(
                     bottomNavigationBar: Container(
-                      color: Colors.white,
+                      height: MediaQuery.of(context).size.height * 0.1,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 5,
+                            blurRadius: 7,
+                            offset: Offset(0, 3), // changes position of shadow
+                          ),
+                        ],
+                      ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
                         child: GNav(
@@ -74,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           activeColor: Colors.black,
                           iconSize: 24,
                           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                          duration: Duration(milliseconds: 1000),
+                          duration: Duration(milliseconds: 500),
                           tabBackgroundColor: Colors.white,
                           color: Colors.black,
                           tabs: [

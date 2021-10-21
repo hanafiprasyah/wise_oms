@@ -22,7 +22,7 @@ class _VoltageState extends State<Voltage> {
               children: [
                 const SizedBox(height: 10,),
                 Center(
-                  child: Text('Live Voltage', style: TextStyle(fontSize: 20,
+                  child: Text('Recently', style: TextStyle(fontSize: 20,
                       color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black)),
                 ),
                 const SizedBox(height: 20,),

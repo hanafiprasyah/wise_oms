@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:responsive_builder/responsive_builder.dart';
@@ -89,6 +91,8 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
 
   @override
   void initState() {
+    super.initState();
+
     _pages = [
       InkWell(
         onTap: (){
@@ -161,7 +165,7 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 750)
+      duration: const Duration(milliseconds: 500)
     );
 
     //initialising the animation
@@ -219,8 +223,8 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
           curve: Curves.easeOut,
         ),
       ));
-    _controller!.forward();
-    super.initState();
+
+    Timer(Duration(milliseconds: 250), () {_controller!.forward();});
   }
 
   @override
@@ -247,7 +251,7 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
                   opacity: _fadeAnimationOne!,
                   child: Container(
                     width: MediaQuery.of(context).size.width,
-                    height: 200,
+                    height: MediaQuery.of(context).size.height * 0.2,
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                         color: Colors.transparent

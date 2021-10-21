@@ -10,50 +10,93 @@ class LivePanel extends StatefulWidget {
   @override
   _LivePanelState createState() => _LivePanelState();
 }
-class _LivePanelState extends State<LivePanel> {
+class _LivePanelState extends State<LivePanel> with SingleTickerProviderStateMixin {
   late List<VoltageData>? _charData;
   late ChartSeriesController _controller;
   TooltipBehavior? _tooltipBehavior;
+
+  bool isLoading = true;
+
+  //Anim
+  late final AnimationController _animationControllerLivePanel;
+  //Animation for 1st list
+  late final Animation<double> livePanel1;
 
   @override
   void initState() {
     super.initState();
     _tooltipBehavior = TooltipBehavior(enable: true);
     Timer.periodic(const Duration(seconds: 1), updateDataSource);
+
+    //Anim
+    _animationControllerLivePanel = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+
+    livePanel1 = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(
+        parent: _animationControllerLivePanel,
+        curve: const Interval(0.2, 0.4, curve: Curves.easeIn),
+      ),
+    );
+
+    Timer(Duration(milliseconds: 700), (){
+      setState(() {
+        _animationControllerLivePanel.forward();
+        loadWidget();
+      });
+    });
     _charData = getChartData();
+  }
+
+  void loadWidget(){
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  @override
+  void dispose() {
+    _animationControllerLivePanel.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: SfCartesianChart(
-          title: ChartTitle(text: 'Live Voltage'),
-          tooltipBehavior: _tooltipBehavior,
-          series: <ChartSeries>[
-            LineSeries<VoltageData, int>(
-                color: const Color.fromRGBO(192, 108, 132, 1),
-                onRendererCreated: (ChartSeriesController controller){
-                  _controller = controller;
-                },
-                dataSource: _charData!,
-                xValueMapper: (VoltageData voldat, _) => voldat.time,
-                yValueMapper: (VoltageData voldat, _) => voldat.speed,
-                enableTooltip: true
-            ),
-          ],
-          primaryXAxis: NumericAxis(
+        body: isLoading ? Center(child: CupertinoActivityIndicator()) : FadeTransition(
+          opacity: livePanel1,
+          child: SfCartesianChart(
+            margin: EdgeInsets.all(16.0),
+            title: ChartTitle(text: 'Live Voltage'),
+            tooltipBehavior: _tooltipBehavior,
+            series: <ChartSeries>[
+              LineSeries<VoltageData, int>(
+                  color: const Color.fromRGBO(192, 108, 132, 1),
+                  onRendererCreated: (ChartSeriesController controller){
+                    _controller = controller;
+                  },
+                  dataSource: _charData!,
+                  xValueMapper: (VoltageData voldat, _) => voldat.time,
+                  yValueMapper: (VoltageData voldat, _) => voldat.volt,
+                  enableTooltip: false
+              ),
+            ],
+            primaryXAxis: NumericAxis(
               edgeLabelPlacement: EdgeLabelPlacement.shift,
-              majorGridLines: const MajorGridLines(width: 0),
+              majorGridLines: const MajorGridLines(width: 1),
               interval: 3,
               title: AxisTitle(text: 'Time(seconds)'),
-              name: 'Time(seconds)'
-          ),
-          primaryYAxis: NumericAxis(
-            axisLine: const AxisLine(width: 0),
-            majorTickLines: const MajorTickLines(size: 0),
-            name: 'Internet speed (Mbps)',
-            title: AxisTitle(text: 'Internet speed (Mbps)'),
+            ),
+            primaryYAxis: NumericAxis(
+              axisLine: const AxisLine(width: 0),
+              majorTickLines: const MajorTickLines(size: 2),
+              minimum: 110,
+              maximum: 380,
+              title: AxisTitle(text: 'Tegangan (Volt)'),
+            ),
           ),
         ),
       ),
@@ -256,7 +299,7 @@ class _LivePanelState extends State<LivePanel> {
 
   int times = 19;
   void updateDataSource(Timer timer){
-    _charData!.add(VoltageData(times++, (math.Random().nextInt(60) + 30)));
+    _charData!.add(VoltageData(times++, (math.Random().nextInt(110) + 270)));
     _charData!.removeAt(0);
     _controller.updateDataSource(
         addedDataIndex: _charData!.length - 1,
@@ -290,7 +333,7 @@ class _LivePanelState extends State<LivePanel> {
   }
 }
 class VoltageData {
-  VoltageData(this.time, this.speed);
+  VoltageData(this.time, this.volt);
   final int time;
-  final int speed;
+  final int volt;
 }

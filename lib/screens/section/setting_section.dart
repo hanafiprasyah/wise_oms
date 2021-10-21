@@ -29,7 +29,7 @@ class _SettingSectionState extends State<SettingSection> {
                 portrait: (_) => Scaffold(
                   resizeToAvoidBottomInset: true,
                   appBar: AppBar(
-                    backgroundColor: Colors.transparent,
+                    backgroundColor: Colors.white,
                     automaticallyImplyLeading: false,
                     title: Text('SETTINGS'),
                     bottomOpacity: 0,

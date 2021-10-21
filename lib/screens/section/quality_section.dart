@@ -11,6 +11,14 @@ class QualitySection extends StatefulWidget {
   _QualitySectionState createState() => _QualitySectionState();
 }
 class _QualitySectionState extends State<QualitySection> {
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   setState(() {
+  //     isLivePanel = !isLivePanel;
+  //   });
+  // }
+
   @override
   Widget build(BuildContext context) {
     return ResponsiveBuilder(
@@ -38,16 +46,16 @@ class _QualitySectionState extends State<QualitySection> {
                         ),
                       ),
                     ),
-                    actions: const [
+                    actions: [
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                        child: LeadingContent(),
+                        child: LeadingContent()
                       )
                     ],
                   ),
                   body: PageView(
                     physics: const BouncingScrollPhysics(),
-                    children: const [
+                    children: [
                       LivePanel(),
                       Voltage()
                       // PowerFactor(),

@@ -23,7 +23,7 @@ class _UsageSectionState extends State<UsageSection> {
                 portrait: (_) => Scaffold(
                   resizeToAvoidBottomInset: true,
                   appBar: AppBar(
-                    backgroundColor: Colors.transparent,
+                    backgroundColor: Colors.white,
                     automaticallyImplyLeading: true,
                     title: Text('USAGE',style: const TextStyle(
                         fontFamily: 'Poppins'
