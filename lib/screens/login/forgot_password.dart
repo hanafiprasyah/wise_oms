@@ -1,10 +1,12 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:wise_oms/core/navigation.dart';
+import 'package:wise_oms/screens/login/confirm_pwchanged.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({Key? key}) : super(key: key);
@@ -20,66 +22,43 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> with Single
   final msgTextController = TextEditingController();
   final maxLines = 5;
 
-  //Biometrics--------------------------------------------------------------
-  final LocalAuthentication _localAuthentication = LocalAuthentication();
-  String authMessage = "Not Authorized";
+  //Biometrics
+  //variable to check is biometric is there or not
+  bool? _hasBiometricSensor;
+  LocalAuthentication authentication = LocalAuthentication();
 
-  Future<bool> checkingBiometrics() async {
-    bool canCheckBiometrics = await _localAuthentication.canCheckBiometrics;
-    return canCheckBiometrics;
-  }
-
-  Future<void> _authMe() async {
-    bool auth = false;
+  Future<void> _checkBio() async {
     try {
-      auth  = await _localAuthentication.authenticate(
-          localizedReason: "Authenticate your finger here.",
-          useErrorDialogs: true,
-          stickyAuth: true,
-          biometricOnly: true
-      );
-      setState(() {
-        authMessage = auth ? "Authorized" : "Not Authorized";
-      });
-    } catch (e){
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Fingerprint Sensor Error. Please reset your Smartphone!'),
-        )
-      );
+      _hasBiometricSensor = await authentication.canCheckBiometrics;
+      print(_hasBiometricSensor);
+    } on PlatformException catch (e) {
+      print(e);
     }
-    if(!mounted) return;
   }
-  //------------------------------------------------------------------------
 
-  //Anim
-  late final AnimationController _animationController;
-  //Animation for 1st list
-  late final Animation<double> _title;
-  //Animation for 2nd list
-  late final Animation<double> _form;
-  //Animation for 3rd list
-  late final Animation<double> _button;
-  //Animation for SVG
-  late final Animation<double> _svg;
-
-  bool _indicatorLoading = false;
-  void showIndicator(){
-    setState(() {
-      _indicatorLoading = true;
-    });
-  }
-  void hideIndicator(){
-    setState(() {
-      _indicatorLoading = false;
-    });
+  Future<void> _getAuth() async {
+    bool isAuth = false;
+    try {
+      isAuth = await authentication.authenticate(
+          localizedReason: "Scan your biometric",
+          biometricOnly: true,
+          useErrorDialogs: true,
+          stickyAuth: true
+      );
+      print(isAuth);
+      if(isAuth){
+        navigateAndRemove(context, ConfirmPwChanged());
+      }
+    } on PlatformException catch (e) {
+      print(e);
+    }
   }
 
   @override
   void initState() {
     super.initState();
 
-    checkingBiometrics();
+    _checkBio();
 
     //Anim
     _animationController = AnimationController(
@@ -116,6 +95,31 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> with Single
     );
 
     Timer(Duration(milliseconds: 250), () {_animationController.forward();});
+  }
+
+  //------------------------------------------------------------------------
+
+  //Anim
+  late final AnimationController _animationController;
+  //Animation for 1st list
+  late final Animation<double> _title;
+  //Animation for 2nd list
+  late final Animation<double> _form;
+  //Animation for 3rd list
+  late final Animation<double> _button;
+  //Animation for SVG
+  late final Animation<double> _svg;
+
+  bool _indicatorLoading = false;
+  void showIndicator(){
+    setState(() {
+      _indicatorLoading = true;
+    });
+  }
+  void hideIndicator(){
+    setState(() {
+      _indicatorLoading = false;
+    });
   }
 
   @override
@@ -201,7 +205,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> with Single
                                         if(value!.isEmpty){
                                           return 'Please enter your email';
                                         }
-                                        return null;
+                                        return value.isValidEmail() ? null : 'Check your email!';
                                       },
                                       controller: emailTextController,
                                       textCapitalization: TextCapitalization.none,
@@ -242,7 +246,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> with Single
                                     onPressed: (){
                                       if(_formKeyForgot.currentState!.validate()) {
                                         FocusManager.instance.primaryFocus?.unfocus();
-                                        _authMe();
+                                        _getAuth();
                                       };
                                     },
                                     child: Text('SEND', style: TextStyle(
@@ -291,3 +295,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> with Single
   }
 }
 
+extension EmailValidator on String {
+  bool isValidEmail() {
+    return RegExp(
+        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+        .hasMatch(this);
+  }
+}
