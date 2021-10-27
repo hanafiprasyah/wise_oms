@@ -224,7 +224,7 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
         ),
       ));
 
-    Timer(Duration(milliseconds: 250), () {_controller!.forward();});
+    Timer(Duration(milliseconds: 500), () {_controller!.forward();});
   }
 
   @override

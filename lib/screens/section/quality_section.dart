@@ -1,8 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:wise_oms/component/qualitySection/live_panel.dart';
-import 'package:wise_oms/component/qualitySection/voltage_content.dart';
+import 'package:wise_oms/core/navigation.dart';
 
 class QualitySection extends StatefulWidget {
   const QualitySection({Key? key}) : super(key: key);
@@ -10,14 +12,51 @@ class QualitySection extends StatefulWidget {
   @override
   _QualitySectionState createState() => _QualitySectionState();
 }
-class _QualitySectionState extends State<QualitySection> {
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   setState(() {
-  //     isLivePanel = !isLivePanel;
-  //   });
-  // }
+class _QualitySectionState extends State<QualitySection> with SingleTickerProviderStateMixin {
+
+  AnimationController ?_controller;
+  Animation<double> ?_fadeAnimationOne;
+  Animation<double> ?_fadeAnimationTwo;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 500)
+    );
+
+    //initialising the animation
+    _fadeAnimationOne = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _controller!,
+      curve: Curves.easeOut,
+    ));
+    //initialising the animation
+    _fadeAnimationTwo = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _controller!,
+      //delay
+      curve: const Interval(
+        0.5,
+        1.0,
+        curve: Curves.easeOut,
+      ),
+    ));
+
+    Timer(Duration(milliseconds: 250), () {_controller!.forward();});
+  }
+
+  @override
+  void dispose() {
+    _controller!.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,38 +68,88 @@ class _QualitySectionState extends State<QualitySection> {
                   appBar: AppBar(
                     backgroundColor: Colors.white,
                     elevation: 0.0,
-                    leadingWidth: MediaQuery.of(context).size.width,
-                    leading: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: ElevatedButton.icon(
-                        icon: Icon(CupertinoIcons.arrow_2_circlepath,color: Colors.white),
-                        onPressed: (){
-                          setState(() {});
-                        },
-                        label: Text('Refresh',style: TextStyle(fontSize: 12)),
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors.black,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(50)
-                          )
-                        ),
+                    // leadingWidth: MediaQuery.of(context).size.width,
+                    // leading: Padding(
+                    //   padding: const EdgeInsets.all(10.0),
+                    //   child: ElevatedButton.icon(
+                    //     icon: Icon(CupertinoIcons.arrow_2_circlepath,color: Colors.white),
+                    //     onPressed: (){
+                    //       setState(() {});
+                    //     },
+                    //     label: Text('Refresh',style: TextStyle(fontSize: 12)),
+                    //     style: ElevatedButton.styleFrom(
+                    //       primary: Colors.black,
+                    //       shape: RoundedRectangleBorder(
+                    //         borderRadius: BorderRadius.circular(50)
+                    //       )
+                    //     ),
+                    //   ),
+                    // ),
+                  ),
+                  body: Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          FadeTransition(
+                            opacity: _fadeAnimationOne!,
+                            child: IntrinsicHeight(
+                              child: Row(
+                                children: [
+                                  const VerticalDivider(
+                                    color: Colors.black,
+                                    width: 50,
+                                    thickness: 4,
+                                  ),
+                                  Container(
+                                    height: MediaQuery.of(context).size.height * 0.2,
+                                    width: MediaQuery.of(context).size.width * 0.7,
+                                    child: ElevatedButton(
+                                      onPressed: (){
+                                        navigateTo(context, LivePanel());
+                                      },
+                                      child: Hero(
+                                          tag: 'QualityLive',
+                                          child: Text('Quality: Live')
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                          primary: Colors.black
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          FadeTransition(
+                            opacity: _fadeAnimationTwo!,
+                            child: IntrinsicHeight(
+                              child: Row(
+                                children: [
+                                  const VerticalDivider(
+                                    color: Colors.black,
+                                    width: 50,
+                                    thickness: 4,
+                                  ),
+                                  Container(
+                                    height: MediaQuery.of(context).size.height * 0.2,
+                                    width: MediaQuery.of(context).size.width * 0.7,
+                                    child: ElevatedButton(
+                                      onPressed: (){},
+                                      child: Text('Quality: Monthly'),
+                                      style: ElevatedButton.styleFrom(
+                                          primary: Colors.black
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    actions: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                        child: LeadingContent()
-                      )
-                    ],
-                  ),
-                  body: PageView(
-                    physics: const BouncingScrollPhysics(),
-                    children: [
-                      LivePanel(),
-                      Voltage()
-                      // PowerFactor(),
-                      // Grounding(),
-                    ],
                   ),
                 )
             );
@@ -81,44 +170,6 @@ class _QualitySectionState extends State<QualitySection> {
             child: Center(
               child: Text("Error : Please call the developer ASAP. Email : prasyah1998@gmail.com"),),);
         }
-    );
-  }
-}
-
-//Leading
-class LeadingContent extends StatefulWidget {
-  const LeadingContent({Key? key}) : super(key: key);
-
-  @override
-  _LeadingContentState createState() => _LeadingContentState();
-}
-class _LeadingContentState extends State<LeadingContent> {
-  String dropDownValue = "Recently";
-  @override
-  Widget build(BuildContext context) {
-    return DropdownButton<String>(
-        value: dropDownValue,
-        icon: Icon(CupertinoIcons.bars,
-          color: Colors.black,
-        ),
-        iconSize: 24,
-        elevation: 16,
-        style: TextStyle(fontSize: 12,
-            color: Colors.black),
-        underline: Container(
-          height: 1,
-        ),
-        onChanged: (String? newValue){
-          setState(() {
-            dropDownValue = newValue!;
-          });
-        },
-        items: <String>['Recently', 'Weekly', 'Monthly'].map<DropdownMenuItem<String>>((String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(value+'   '),
-          );
-        }).toList(),
     );
   }
 }

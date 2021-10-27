@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 import 'dart:async';
-import 'dart:math' as math;
-import 'package:syncfusion_flutter_charts/charts.dart';
+import 'dart:math';
+import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class LivePanel extends StatefulWidget {
   const LivePanel({Key? key}) : super(key: key);
@@ -11,22 +13,22 @@ class LivePanel extends StatefulWidget {
   _LivePanelState createState() => _LivePanelState();
 }
 class _LivePanelState extends State<LivePanel> with SingleTickerProviderStateMixin {
-  late List<VoltageData>? _charData;
-  late ChartSeriesController _controller;
-  TooltipBehavior? _tooltipBehavior;
 
   bool isLoading = true;
-
   //Anim
   late final AnimationController _animationControllerLivePanel;
   //Animation for 1st list
   late final Animation<double> livePanel1;
+  Timer? timer;
 
   @override
   void initState() {
     super.initState();
-    _tooltipBehavior = TooltipBehavior(enable: true);
-    Timer.periodic(const Duration(seconds: 1), updateDataSource);
+
+    // Timer.periodic(const Duration(seconds: 1), generateRandDouble());
+    timer = Timer.periodic(const Duration(seconds: 1), (t) =>
+        setState(() {})
+    );
 
     //Anim
     _animationControllerLivePanel = AnimationController(
@@ -41,13 +43,15 @@ class _LivePanelState extends State<LivePanel> with SingleTickerProviderStateMix
       ),
     );
 
-    Timer(Duration(milliseconds: 700), (){
-      setState(() {
-        _animationControllerLivePanel.forward();
-        loadWidget();
-      });
-    });
-    _charData = getChartData();
+    _animationControllerLivePanel.forward();
+    loadWidget();
+  }
+
+  @override
+  void dispose() {
+    _animationControllerLivePanel.dispose();
+    timer?.cancel();
+    super.dispose();
   }
 
   void loadWidget(){
@@ -57,283 +61,664 @@ class _LivePanelState extends State<LivePanel> with SingleTickerProviderStateMix
   }
 
   @override
-  void dispose() {
-    _animationControllerLivePanel.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: isLoading ? Center(child: CupertinoActivityIndicator()) : FadeTransition(
-          opacity: livePanel1,
-          child: SfCartesianChart(
-            margin: EdgeInsets.all(16.0),
-            title: ChartTitle(text: 'Live Voltage'),
-            tooltipBehavior: _tooltipBehavior,
-            series: <ChartSeries>[
-              LineSeries<VoltageData, int>(
-                  color: const Color.fromRGBO(192, 108, 132, 1),
-                  onRendererCreated: (ChartSeriesController controller){
-                    _controller = controller;
-                  },
-                  dataSource: _charData!,
-                  xValueMapper: (VoltageData voldat, _) => voldat.time,
-                  yValueMapper: (VoltageData voldat, _) => voldat.volt,
-                  enableTooltip: false
-              ),
-            ],
-            primaryXAxis: NumericAxis(
-              edgeLabelPlacement: EdgeLabelPlacement.shift,
-              majorGridLines: const MajorGridLines(width: 1),
-              interval: 3,
-              title: AxisTitle(text: 'Time(seconds)'),
-            ),
-            primaryYAxis: NumericAxis(
-              axisLine: const AxisLine(width: 0),
-              majorTickLines: const MajorTickLines(size: 2),
-              minimum: 110,
-              maximum: 380,
-              title: AxisTitle(text: 'Tegangan (Volt)'),
-            ),
-          ),
-        ),
-      ),
-    );
-    // var mediaQueryData = MediaQuery.of(context);
-    // final double widthScreen = mediaQueryData.size.width;
-    // final double appBarHeight = kToolbarHeight;
-    // final double paddingTop = mediaQueryData.padding.top;
-    // final double paddingBottom = mediaQueryData.padding.bottom;
-    // final double heightScreen = mediaQueryData.size.height - paddingBottom - paddingTop - appBarHeight;
-    // return SafeArea(
-    //   child: GridView.count(
-    //       childAspectRatio: widthScreen/heightScreen,
-    //       reverse: false,
-    //       crossAxisCount: 2,
-    //       crossAxisSpacing: 10,
-    //       mainAxisSpacing: 10,
-    //       physics: BouncingScrollPhysics(),
-    //       children: [
-    //         Container(
-    //           decoration: BoxDecoration(
-    //             color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade800 : Colors.white,
-    //             border: Border(
-    //                 right: BorderSide(
-    //                   color: Colors.black
-    //                 ),
-    //                 bottom: BorderSide(
-    //                   color: Colors.black
-    //                 )
-    //             )
-    //           ),
-    //             child: Center(
-    //               child: SfRadialGauge(
-    //                 title: GaugeTitle(text: "Voltage"),
-    //               animationDuration: 2500,
-    //               axes: <RadialAxis>[
-    //                 RadialAxis(
-    //                   minimum: 100,
-    //                   maximum: 300,
-    //                   ranges: <GaugeRange>[
-    //                     GaugeRange(startValue: 100, endValue: 219, color: Colors.red,),
-    //                     GaugeRange(startValue: 210, endValue: 215, color: Colors.yellow,),
-    //                     GaugeRange(startValue: 215, endValue: 224, color: Colors.green,),
-    //                     GaugeRange(startValue: 224, endValue: 230, color: Colors.yellow,),
-    //                     GaugeRange(startValue: 230, endValue: 300, color: Colors.red,),
-    //                   ],
-    //                   pointers: const <GaugePointer>[
-    //                     NeedlePointer(needleStartWidth: 1,needleEndWidth: 5,value: 245,enableAnimation: true,animationType: AnimationType.ease,animationDuration: 1000),
-    //                   ],
-    //                   annotations: <GaugeAnnotation>[
-    //                     GaugeAnnotation(
-    //                       horizontalAlignment: GaugeAlignment.center,
-    //                       verticalAlignment: GaugeAlignment.center,
-    //                       widget: Container(color: Colors.transparent,child:
-    //                         const Text('High', style: TextStyle(fontSize: 25, fontFamily: 'Poppins'),),),
-    //                         angle: 90, positionFactor: 0.9,
-    //                     ),
-    //                   ],
-    //                 )
-    //               ],
-    //             ),
-    //           ),
-    //         ),
-    //         Container(
-    //           decoration: BoxDecoration(
-    //               color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade800 : Colors.white,
-    //               border: Border(
-    //                   left: BorderSide(
-    //                       color: Colors.black
-    //                   ),
-    //                   bottom: BorderSide(
-    //                       color: Colors.black
-    //                   )
-    //               )
-    //           ),
-    //           child: Center(
-    //             child: SfRadialGauge(
-    //               title: GaugeTitle(text: "Ampere"),
-    //               animationDuration: 2500,
-    //               axes: <RadialAxis>[
-    //                 RadialAxis(
-    //                   minimum: 100,
-    //                   maximum: 300,
-    //                   ranges: <GaugeRange>[
-    //                     GaugeRange(startValue: 100, endValue: 219, color: Colors.red,),
-    //                     GaugeRange(startValue: 210, endValue: 215, color: Colors.yellow,),
-    //                     GaugeRange(startValue: 215, endValue: 224, color: Colors.green,),
-    //                     GaugeRange(startValue: 224, endValue: 230, color: Colors.yellow,),
-    //                     GaugeRange(startValue: 230, endValue: 300, color: Colors.red,),
-    //                   ],
-    //                   pointers: const <GaugePointer>[
-    //                     NeedlePointer(needleStartWidth: 1,needleEndWidth: 5,value: 245,enableAnimation: true,animationType: AnimationType.ease,animationDuration: 1000),
-    //                   ],
-    //                   annotations: <GaugeAnnotation>[
-    //                     GaugeAnnotation(
-    //                       horizontalAlignment: GaugeAlignment.center,
-    //                       verticalAlignment: GaugeAlignment.center,
-    //                       widget: Container(color: Colors.transparent,child:
-    //                       const Text('High', style: TextStyle(fontSize: 25, fontFamily: 'Poppins'),),),
-    //                       angle: 90, positionFactor: 0.9,
-    //                     ),
-    //                   ],
-    //                 )
-    //               ],
-    //             ),
-    //           ),
-    //         ),
-    //         Container(
-    //           decoration: BoxDecoration(
-    //               color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade800 : Colors.white,
-    //               border: Border(
-    //                   right: BorderSide(
-    //                       color: Colors.black
-    //                   ),
-    //                   top: BorderSide(
-    //                       color: Colors.black
-    //                   )
-    //               )
-    //           ),
-    //           child: Center(
-    //             child: SfRadialGauge(
-    //               title: GaugeTitle(text: "Power Factor"),
-    //               animationDuration: 2500,
-    //               axes: <RadialAxis>[
-    //                 RadialAxis(
-    //                   minimum: 100,
-    //                   maximum: 300,
-    //                   ranges: <GaugeRange>[
-    //                     GaugeRange(startValue: 100, endValue: 219, color: Colors.red,),
-    //                     GaugeRange(startValue: 210, endValue: 215, color: Colors.yellow,),
-    //                     GaugeRange(startValue: 215, endValue: 224, color: Colors.green,),
-    //                     GaugeRange(startValue: 224, endValue: 230, color: Colors.yellow,),
-    //                     GaugeRange(startValue: 230, endValue: 300, color: Colors.red,),
-    //                   ],
-    //                   pointers: const <GaugePointer>[
-    //                     NeedlePointer(needleStartWidth: 1,needleEndWidth: 5,value: 245,enableAnimation: true,animationType: AnimationType.ease,animationDuration: 1000),
-    //                   ],
-    //                   annotations: <GaugeAnnotation>[
-    //                     GaugeAnnotation(
-    //                       horizontalAlignment: GaugeAlignment.center,
-    //                       verticalAlignment: GaugeAlignment.center,
-    //                       widget: Container(color: Colors.transparent,child:
-    //                       const Text('High', style: TextStyle(fontSize: 25, fontFamily: 'Poppins'),),),
-    //                       angle: 90, positionFactor: 0.9,
-    //                     ),
-    //                   ],
-    //                 )
-    //               ],
-    //             ),
-    //           ),
-    //         ),
-    //         Container(
-    //           decoration: BoxDecoration(
-    //               color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade800 : Colors.white,
-    //               border: Border(
-    //                   left: BorderSide(
-    //                       color: Colors.black
-    //                   ),
-    //                   top: BorderSide(
-    //                       color: Colors.black
-    //                   )
-    //               ),
-    //           ),
-    //           child: Center(
-    //             child: SfRadialGauge(
-    //               title: GaugeTitle(text: "Grounding"),
-    //               animationDuration: 2500,
-    //               axes: <RadialAxis>[
-    //                 RadialAxis(
-    //                   minimum: 100,
-    //                   maximum: 300,
-    //                   ranges: <GaugeRange>[
-    //                     GaugeRange(startValue: 100, endValue: 219, color: Colors.red,),
-    //                     GaugeRange(startValue: 210, endValue: 215, color: Colors.yellow,),
-    //                     GaugeRange(startValue: 215, endValue: 224, color: Colors.green,),
-    //                     GaugeRange(startValue: 224, endValue: 230, color: Colors.yellow,),
-    //                     GaugeRange(startValue: 230, endValue: 300, color: Colors.red,),
-    //                   ],
-    //                   pointers: const <GaugePointer>[
-    //                     NeedlePointer(needleStartWidth: 1,needleEndWidth: 5,value: 245,enableAnimation: true,animationType: AnimationType.ease,animationDuration: 1000),
-    //                   ],
-    //                   annotations: <GaugeAnnotation>[
-    //                     GaugeAnnotation(
-    //                       horizontalAlignment: GaugeAlignment.center,
-    //                       verticalAlignment: GaugeAlignment.center,
-    //                       widget: Container(color: Colors.transparent,child:
-    //                       const Text('High', style: TextStyle(fontSize: 25, fontFamily: 'Poppins'),),),
-    //                       angle: 90, positionFactor: 0.9,
-    //                     ),
-    //                   ],
-    //                 )
-    //               ],
-    //             ),
-    //           ),
-    //         ),
-    //       ],
-    //   ),
-    // );
-  }
 
-  int times = 19;
-  void updateDataSource(Timer timer){
-    _charData!.add(VoltageData(times++, (math.Random().nextInt(110) + 270)));
-    _charData!.removeAt(0);
-    _controller.updateDataSource(
-        addedDataIndex: _charData!.length - 1,
-        removedDataIndex: 0
-    );
-  }
+    final PageController controller = PageController(initialPage: 0);
+    var width = MediaQuery.of(context).size.width;
 
-  List<VoltageData>? getChartData(){
-    final List<VoltageData> chartData = [
-      VoltageData(0, 42),
-      VoltageData(1, 47),
-      VoltageData(2, 43),
-      VoltageData(3, 49),
-      VoltageData(4, 54),
-      VoltageData(5, 41),
-      VoltageData(6, 58),
-      VoltageData(7, 51),
-      VoltageData(8, 98),
-      VoltageData(9, 41),
-      VoltageData(10, 53),
-      VoltageData(11, 72),
-      VoltageData(12, 86),
-      VoltageData(13, 52),
-      VoltageData(14, 94),
-      VoltageData(15, 92),
-      VoltageData(16, 86),
-      VoltageData(17, 72),
-      VoltageData(18, 94),
-    ];
-    return chartData;
+    //Variable Live Volt
+    int min = 218;
+    int max = 255;
+    final valueRdVoltRSin = min + Random().nextInt(max-min).toDouble();
+    final valueRdVoltRSOut = min + Random().nextInt(max-min).toDouble();
+    final valueRdVoltSTin = min + Random().nextInt(max-min).toDouble();
+    final valueRdVoltSTout = min + Random().nextInt(max-min).toDouble();
+    final valueRdVoltTRin = min + Random().nextInt(max-min).toDouble();
+    final valueRdVoltTRout = min + Random().nextInt(max-min).toDouble();
+    final valueRdVoltRNin = min + Random().nextInt(max-min).toDouble();
+    final valueRdVoltRNout = min + Random().nextInt(max-min).toDouble();
+    final valueRdVoltSNin = min + Random().nextInt(max-min).toDouble();
+    final valueRdVoltSNout = min + Random().nextInt(max-min).toDouble();
+    final valueRdVoltTNin = min + Random().nextInt(max-min).toDouble();
+    final valueRdVoltTNout = min + Random().nextInt(max-min).toDouble();
+
+    //Variable Live Ampere
+    //Variable Live Temp
+    //Variable Live PF
+    //Variable Live Ground
+
+    return ResponsiveBuilder(
+        builder: (context, size){
+          if(size.deviceScreenType == DeviceScreenType.mobile){
+            return OrientationLayoutBuilder(
+                portrait: (_) => Scaffold(
+                  appBar: AppBar(
+                    backgroundColor: Colors.white,
+                    elevation: 0.0,
+                    leading: IconButton(
+                      icon: Icon(CupertinoIcons.back, color: Colors.black, size: 28),
+                      onPressed: (){
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                  body: isLoading ? Center(child: CupertinoActivityIndicator()) : FadeTransition(
+                    opacity: livePanel1,
+                    child: SafeArea(
+                      child: PageView(
+                        physics: BouncingScrollPhysics(),
+                        controller: controller,
+                        scrollDirection: Axis.vertical,
+                        children: [
+                          ///VOLT-IO-RS
+                          Column(
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                    width: width,
+                                    height: 350,
+                                    child: SfRadialGauge(
+                                      enableLoadingAnimation: true,
+                                      title: GaugeTitle(text: 'Input Volt R-S',textStyle: TextStyle(
+                                        letterSpacing: 2.0,
+                                        fontSize: 20.0,
+                                      )),
+                                      axes: [
+                                        RadialAxis(
+                                          interval: 15.0,
+                                          axisLineStyle: AxisLineStyle(
+                                            cornerStyle: CornerStyle.bothCurve,
+                                          ),
+                                          minimum: 110,
+                                          maximum: 380,
+                                          ranges: [
+                                            GaugeRange(label: 'Very Low',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 110, endValue: 160, color: Colors.grey.shade600,),
+                                            GaugeRange(label: 'Low',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 160, endValue: 218, color: Colors.grey.shade800,),
+                                            GaugeRange(startValue: 218, endValue: 225, color: Colors.green,),
+                                            GaugeRange(label: 'High',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 225, endValue: 310, color: Colors.orange,),
+                                            GaugeRange(label: 'Extreme',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 310, endValue: 380, color: Colors.red,),
+                                          ],
+                                          pointers: [
+                                            NeedlePointer(
+                                              value: valueRdVoltRSin,
+                                            ),
+                                          ],
+                                          annotations: [
+                                            GaugeAnnotation(
+                                              widget: Container(
+                                                  child: Text('$valueRdVoltRSin', style: TextStyle(
+                                                    fontSize: 18.0,
+                                                    letterSpacing: 2.0,
+                                                  ),)),
+                                              angle: 90,
+                                              positionFactor: 0.5,
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    )
+                                ),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                    width: width,
+                                    height: 350,
+                                    child: SfRadialGauge(
+                                      enableLoadingAnimation: true,
+                                      title: GaugeTitle(text: 'Output Volt R-S',textStyle: TextStyle(
+                                        letterSpacing: 2.0,
+                                        fontSize: 20.0,
+                                      )),
+                                      axes: [
+                                        RadialAxis(
+                                          interval: 15.0,
+                                          axisLineStyle: AxisLineStyle(
+                                            cornerStyle: CornerStyle.bothCurve,
+                                          ),
+                                          minimum: 110,
+                                          maximum: 380,
+                                          ranges: [
+                                            GaugeRange(label: 'Very Low',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 110, endValue: 160, color: Colors.grey.shade600,),
+                                            GaugeRange(label: 'Low',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 160, endValue: 218, color: Colors.grey.shade800,),
+                                            GaugeRange(startValue: 218, endValue: 225, color: Colors.green,),
+                                            GaugeRange(label: 'High',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 225, endValue: 310, color: Colors.orange,),
+                                            GaugeRange(label: 'Extreme',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 310, endValue: 380, color: Colors.red,),
+                                          ],
+                                          pointers: [
+                                            NeedlePointer(
+                                              value: valueRdVoltRSOut,
+                                            ),
+                                          ],
+                                          annotations: [
+                                            GaugeAnnotation(
+                                              widget: Container(
+                                                  child: Text('$valueRdVoltRSOut', style: TextStyle(
+                                                    fontSize: 18.0,
+                                                    letterSpacing: 2.0,
+                                                  ),)),
+                                              angle: 90,
+                                              positionFactor: 0.5,
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    )
+                                ),
+                              )
+                            ],
+                          ),
+                          ///VOLT-IO-ST
+                          Column(
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                    width: width,
+                                    height: 350,
+                                    child: SfRadialGauge(
+                                      title: GaugeTitle(text: 'Input Volt S-T',textStyle: TextStyle(
+                                        letterSpacing: 2.0,
+                                        fontSize: 20.0,
+                                      )),
+                                      axes: [
+                                        RadialAxis(
+                                          interval: 15.0,
+                                          axisLineStyle: AxisLineStyle(
+                                            cornerStyle: CornerStyle.bothCurve,
+                                          ),
+                                          minimum: 110,
+                                          maximum: 380,
+                                          ranges: [
+                                            GaugeRange(label: 'Very Low',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 110, endValue: 160, color: Colors.grey.shade600,),
+                                            GaugeRange(label: 'Low',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 160, endValue: 218, color: Colors.grey.shade800,),
+                                            GaugeRange(startValue: 218, endValue: 225, color: Colors.green,),
+                                            GaugeRange(label: 'High',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 225, endValue: 310, color: Colors.orange,),
+                                            GaugeRange(label: 'Extreme',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 310, endValue: 380, color: Colors.red,),
+                                          ],
+                                          pointers: [
+                                            NeedlePointer(
+                                              value: valueRdVoltSTin,
+                                            ),
+                                          ],
+                                          annotations: [
+                                            GaugeAnnotation(
+                                              widget: Container(
+                                                  child: Text('$valueRdVoltSTin', style: TextStyle(
+                                                    fontSize: 18.0,
+                                                    letterSpacing: 2.0,
+                                                  ),)),
+                                              angle: 90,
+                                              positionFactor: 0.5,
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    )
+                                ),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                    width: width,
+                                    height: 350,
+                                    child: SfRadialGauge(
+                                      title: GaugeTitle(text: 'Output Volt S-T',textStyle: TextStyle(
+                                        letterSpacing: 2.0,
+                                        fontSize: 20.0,
+                                      )),
+                                      axes: [
+                                        RadialAxis(
+                                          interval: 15.0,
+                                          axisLineStyle: AxisLineStyle(
+                                            cornerStyle: CornerStyle.bothCurve,
+                                          ),
+                                          minimum: 110,
+                                          maximum: 380,
+                                          ranges: [
+                                            GaugeRange(label: 'Very Low',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 110, endValue: 160, color: Colors.grey.shade600,),
+                                            GaugeRange(label: 'Low',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 160, endValue: 218, color: Colors.grey.shade800,),
+                                            GaugeRange(startValue: 218, endValue: 225, color: Colors.green,),
+                                            GaugeRange(label: 'High',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 225, endValue: 310, color: Colors.orange,),
+                                            GaugeRange(label: 'Extreme',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 310, endValue: 380, color: Colors.red,),
+                                          ],
+                                          pointers: [
+                                            NeedlePointer(
+                                              value: valueRdVoltSTout,
+                                            ),
+                                          ],
+                                          annotations: [
+                                            GaugeAnnotation(
+                                              widget: Container(
+                                                  child: Text('$valueRdVoltSTout', style: TextStyle(
+                                                    fontSize: 18.0,
+                                                    letterSpacing: 2.0,
+                                                  ),)),
+                                              angle: 90,
+                                              positionFactor: 0.5,
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    )
+                                ),
+                              )
+                            ],
+                          ),
+                          ///VOLT-IO-TR
+                          Column(
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                    width: width,
+                                    height: 350,
+                                    child: SfRadialGauge(
+                                      title: GaugeTitle(text: 'Input Volt T-R',textStyle: TextStyle(
+                                        letterSpacing: 2.0,
+                                        fontSize: 20.0,
+                                      )),
+                                      axes: [
+                                        RadialAxis(
+                                          interval: 15.0,
+                                          axisLineStyle: AxisLineStyle(
+                                            cornerStyle: CornerStyle.bothCurve,
+                                          ),
+                                          minimum: 110,
+                                          maximum: 380,
+                                          ranges: [
+                                            GaugeRange(label: 'Very Low',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 110, endValue: 160, color: Colors.grey.shade600,),
+                                            GaugeRange(label: 'Low',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 160, endValue: 218, color: Colors.grey.shade800,),
+                                            GaugeRange(startValue: 218, endValue: 225, color: Colors.green,),
+                                            GaugeRange(label: 'High',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 225, endValue: 310, color: Colors.orange,),
+                                            GaugeRange(label: 'Extreme',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 310, endValue: 380, color: Colors.red,),
+                                          ],
+                                          pointers: [
+                                            NeedlePointer(
+                                              value: valueRdVoltTRin,
+                                            ),
+                                          ],
+                                          annotations: [
+                                            GaugeAnnotation(
+                                              widget: Container(
+                                                  child: Text('$valueRdVoltTRin', style: TextStyle(
+                                                    fontSize: 18.0,
+                                                    letterSpacing: 2.0,
+                                                  ),)),
+                                              angle: 90,
+                                              positionFactor: 0.5,
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    )
+                                ),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                    width: width,
+                                    height: 350,
+                                    child: SfRadialGauge(
+                                      title: GaugeTitle(text: 'Output Volt T-R',textStyle: TextStyle(
+                                        letterSpacing: 2.0,
+                                        fontSize: 20.0,
+                                      )),
+                                      axes: [
+                                        RadialAxis(
+                                          interval: 15.0,
+                                          axisLineStyle: AxisLineStyle(
+                                            cornerStyle: CornerStyle.bothCurve,
+                                          ),
+                                          minimum: 110,
+                                          maximum: 380,
+                                          ranges: [
+                                            GaugeRange(label: 'Very Low',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 110, endValue: 160, color: Colors.grey.shade600,),
+                                            GaugeRange(label: 'Low',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 160, endValue: 218, color: Colors.grey.shade800,),
+                                            GaugeRange(startValue: 218, endValue: 225, color: Colors.green,),
+                                            GaugeRange(label: 'High',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 225, endValue: 310, color: Colors.orange,),
+                                            GaugeRange(label: 'Extreme',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 310, endValue: 380, color: Colors.red,),
+                                          ],
+                                          pointers: [
+                                            NeedlePointer(
+                                              value: valueRdVoltTRout,
+                                            ),
+                                          ],
+                                          annotations: [
+                                            GaugeAnnotation(
+                                              widget: Container(
+                                                  child: Text('$valueRdVoltTRout', style: TextStyle(
+                                                    fontSize: 18.0,
+                                                    letterSpacing: 2.0,
+                                                  ),)),
+                                              angle: 90,
+                                              positionFactor: 0.5,
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    )
+                                ),
+                              )
+                            ],
+                          ),
+                          ///VOLT-IO-RN
+                          Column(
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                    width: width,
+                                    height: 350,
+                                    child: SfRadialGauge(
+                                      title: GaugeTitle(text: 'Input Volt R-N',textStyle: TextStyle(
+                                        letterSpacing: 2.0,
+                                        fontSize: 20.0,
+                                      )),
+                                      axes: [
+                                        RadialAxis(
+                                          interval: 15.0,
+                                          axisLineStyle: AxisLineStyle(
+                                            cornerStyle: CornerStyle.bothCurve,
+                                          ),
+                                          minimum: 110,
+                                          maximum: 380,
+                                          ranges: [
+                                            GaugeRange(label: 'Very Low',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 110, endValue: 160, color: Colors.grey.shade600,),
+                                            GaugeRange(label: 'Low',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 160, endValue: 218, color: Colors.grey.shade800,),
+                                            GaugeRange(startValue: 218, endValue: 225, color: Colors.green,),
+                                            GaugeRange(label: 'High',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 225, endValue: 310, color: Colors.orange,),
+                                            GaugeRange(label: 'Extreme',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 310, endValue: 380, color: Colors.red,),
+                                          ],
+                                          pointers: [
+                                            NeedlePointer(
+                                              value: valueRdVoltRNin,
+                                            ),
+                                          ],
+                                          annotations: [
+                                            GaugeAnnotation(
+                                              widget: Container(
+                                                  child: Text('$valueRdVoltRNin', style: TextStyle(
+                                                    fontSize: 18.0,
+                                                    letterSpacing: 2.0,
+                                                  ),)),
+                                              angle: 90,
+                                              positionFactor: 0.5,
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    )
+                                ),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                    width: width,
+                                    height: 350,
+                                    child: SfRadialGauge(
+                                      title: GaugeTitle(text: 'Output Volt R-N',textStyle: TextStyle(
+                                        letterSpacing: 2.0,
+                                        fontSize: 20.0,
+                                      )),
+                                      axes: [
+                                        RadialAxis(
+                                          interval: 15.0,
+                                          axisLineStyle: AxisLineStyle(
+                                            cornerStyle: CornerStyle.bothCurve,
+                                          ),
+                                          minimum: 110,
+                                          maximum: 380,
+                                          ranges: [
+                                            GaugeRange(label: 'Very Low',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 110, endValue: 160, color: Colors.grey.shade600,),
+                                            GaugeRange(label: 'Low',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 160, endValue: 218, color: Colors.grey.shade800,),
+                                            GaugeRange(startValue: 218, endValue: 225, color: Colors.green,),
+                                            GaugeRange(label: 'High',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 225, endValue: 310, color: Colors.orange,),
+                                            GaugeRange(label: 'Extreme',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 310, endValue: 380, color: Colors.red,),
+                                          ],
+                                          pointers: [
+                                            NeedlePointer(
+                                              value: valueRdVoltRNout,
+                                            ),
+                                          ],
+                                          annotations: [
+                                            GaugeAnnotation(
+                                              widget: Container(
+                                                  child: Text('$valueRdVoltRNout', style: TextStyle(
+                                                    fontSize: 18.0,
+                                                    letterSpacing: 2.0,
+                                                  ),)),
+                                              angle: 90,
+                                              positionFactor: 0.5,
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    )
+                                ),
+                              )
+                            ],
+                          ),
+                          ///VOLT-IO-SN
+                          Column(
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                    width: width,
+                                    height: 350,
+                                    child: SfRadialGauge(
+                                      title: GaugeTitle(text: 'Input Volt S-N',textStyle: TextStyle(
+                                        letterSpacing: 2.0,
+                                        fontSize: 20.0,
+                                      )),
+                                      axes: [
+                                        RadialAxis(
+                                          interval: 15.0,
+                                          axisLineStyle: AxisLineStyle(
+                                            cornerStyle: CornerStyle.bothCurve,
+                                          ),
+                                          minimum: 110,
+                                          maximum: 380,
+                                          ranges: [
+                                            GaugeRange(label: 'Very Low',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 110, endValue: 160, color: Colors.grey.shade600,),
+                                            GaugeRange(label: 'Low',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 160, endValue: 218, color: Colors.grey.shade800,),
+                                            GaugeRange(startValue: 218, endValue: 225, color: Colors.green,),
+                                            GaugeRange(label: 'High',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 225, endValue: 310, color: Colors.orange,),
+                                            GaugeRange(label: 'Extreme',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 310, endValue: 380, color: Colors.red,),
+                                          ],
+                                          pointers: [
+                                            NeedlePointer(
+                                              value: valueRdVoltSNin,
+                                            ),
+                                          ],
+                                          annotations: [
+                                            GaugeAnnotation(
+                                              widget: Container(
+                                                  child: Text('$valueRdVoltSNin', style: TextStyle(
+                                                    fontSize: 18.0,
+                                                    letterSpacing: 2.0,
+                                                  ),)),
+                                              angle: 90,
+                                              positionFactor: 0.5,
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    )
+                                ),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                    width: width,
+                                    height: 350,
+                                    child: SfRadialGauge(
+                                      title: GaugeTitle(text: 'Output Volt S-N',textStyle: TextStyle(
+                                        letterSpacing: 2.0,
+                                        fontSize: 20.0,
+                                      )),
+                                      axes: [
+                                        RadialAxis(
+                                          interval: 15.0,
+                                          axisLineStyle: AxisLineStyle(
+                                            cornerStyle: CornerStyle.bothCurve,
+                                          ),
+                                          minimum: 110,
+                                          maximum: 380,
+                                          ranges: [
+                                            GaugeRange(label: 'Very Low',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 110, endValue: 160, color: Colors.grey.shade600,),
+                                            GaugeRange(label: 'Low',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 160, endValue: 218, color: Colors.grey.shade800,),
+                                            GaugeRange(startValue: 218, endValue: 225, color: Colors.green,),
+                                            GaugeRange(label: 'High',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 225, endValue: 310, color: Colors.orange,),
+                                            GaugeRange(label: 'Extreme',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 310, endValue: 380, color: Colors.red,),
+                                          ],
+                                          pointers: [
+                                            NeedlePointer(
+                                              value: valueRdVoltSNout,
+                                            ),
+                                          ],
+                                          annotations: [
+                                            GaugeAnnotation(
+                                              widget: Container(
+                                                  child: Text('$valueRdVoltSNout', style: TextStyle(
+                                                    fontSize: 18.0,
+                                                    letterSpacing: 2.0,
+                                                  ),)),
+                                              angle: 90,
+                                              positionFactor: 0.5,
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    )
+                                ),
+                              )
+                            ],
+                          ),
+                          ///VOLT-IO-TN
+                          Column(
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                    width: width,
+                                    height: 350,
+                                    child: SfRadialGauge(
+                                      title: GaugeTitle(text: 'Input Volt T-N',textStyle: TextStyle(
+                                        letterSpacing: 2.0,
+                                        fontSize: 20.0,
+                                      )),
+                                      axes: [
+                                        RadialAxis(
+                                          interval: 15.0,
+                                          axisLineStyle: AxisLineStyle(
+                                            cornerStyle: CornerStyle.bothCurve,
+                                          ),
+                                          minimum: 110,
+                                          maximum: 380,
+                                          ranges: [
+                                            GaugeRange(label: 'Very Low',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 110, endValue: 160, color: Colors.grey.shade600,),
+                                            GaugeRange(label: 'Low',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 160, endValue: 218, color: Colors.grey.shade800,),
+                                            GaugeRange(startValue: 218, endValue: 225, color: Colors.green,),
+                                            GaugeRange(label: 'High',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 225, endValue: 310, color: Colors.orange,),
+                                            GaugeRange(label: 'Extreme',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 310, endValue: 380, color: Colors.red,),
+                                          ],
+                                          pointers: [
+                                            NeedlePointer(
+                                              value: valueRdVoltTNin,
+                                            ),
+                                          ],
+                                          annotations: [
+                                            GaugeAnnotation(
+                                              widget: Container(
+                                                  child: Text('$valueRdVoltTNin', style: TextStyle(
+                                                    fontSize: 18.0,
+                                                    letterSpacing: 2.0,
+                                                  ),)),
+                                              angle: 90,
+                                              positionFactor: 0.5,
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    )
+                                ),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                    width: width,
+                                    height: 350,
+                                    child: SfRadialGauge(
+                                      title: GaugeTitle(text: 'Output Volt T-N',textStyle: TextStyle(
+                                        letterSpacing: 2.0,
+                                        fontSize: 20.0,
+                                      )),
+                                      axes: [
+                                        RadialAxis(
+                                          interval: 15.0,
+                                          axisLineStyle: AxisLineStyle(
+                                            cornerStyle: CornerStyle.bothCurve,
+                                          ),
+                                          minimum: 110,
+                                          maximum: 380,
+                                          ranges: [
+                                            GaugeRange(label: 'Very Low',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 110, endValue: 160, color: Colors.grey.shade600,),
+                                            GaugeRange(label: 'Low',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 160, endValue: 218, color: Colors.grey.shade800,),
+                                            GaugeRange(startValue: 218, endValue: 225, color: Colors.green,),
+                                            GaugeRange(label: 'High',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 225, endValue: 310, color: Colors.orange,),
+                                            GaugeRange(label: 'Extreme',labelStyle: GaugeTextStyle(fontSize: 10),startValue: 310, endValue: 380, color: Colors.red,),
+                                          ],
+                                          pointers: [
+                                            NeedlePointer(
+                                              value: valueRdVoltTNout,
+                                            ),
+                                          ],
+                                          annotations: [
+                                            GaugeAnnotation(
+                                              widget: Container(
+                                                  child: Text('$valueRdVoltTNout', style: TextStyle(
+                                                    fontSize: 18.0,
+                                                    letterSpacing: 2.0,
+                                                  ),)),
+                                              angle: 90,
+                                              positionFactor: 0.5,
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    )
+                                ),
+                              )
+                            ],
+                          ),
+                        ],
+                      )
+                    ),
+                  ),
+                ),
+
+            );
+          }
+          if(size.deviceScreenType == DeviceScreenType.desktop){
+            return Center(child: Text("This app does not support Desktop Screen"));
+          }
+          if(size.deviceScreenType == DeviceScreenType.tablet){
+            return Center(child: Text("This app does not support Tablet Screen"));
+          }
+          if(size.deviceScreenType == DeviceScreenType.watch){
+            return Center(child: Text("This app does not support Watch Screen"));
+          }
+          return Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            color: Colors.red,
+            alignment: Alignment.center,
+            child: Center(
+              child: Text("Error : Please call the developer ASAP. Email : prasyah1998@gmail.com"),),);
+        }
+    );
   }
 }
-class VoltageData {
-  VoltageData(this.time, this.volt);
-  final int time;
-  final int volt;
-}
+
