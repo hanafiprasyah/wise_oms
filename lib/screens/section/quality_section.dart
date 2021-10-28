@@ -35,6 +35,7 @@ class _QualitySectionState extends State<QualitySection> with SingleTickerProvid
       parent: _controller!,
       curve: Curves.easeOut,
     ));
+
     //initialising the animation
     _fadeAnimationTwo = Tween<double>(
       begin: 0.0,
@@ -109,10 +110,7 @@ class _QualitySectionState extends State<QualitySection> with SingleTickerProvid
                                       onPressed: (){
                                         navigateTo(context, LivePanel());
                                       },
-                                      child: Hero(
-                                          tag: 'QualityLive',
-                                          child: Text('Quality: Live')
-                                      ),
+                                      child: Text('Live Quality Panel'),
                                       style: ElevatedButton.styleFrom(
                                           primary: Colors.black
                                       ),

@@ -306,7 +306,7 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
                 position: _slideAnimationBoxTwo!,
                 child: FadeTransition(
                     opacity: _fadeAnimationOne!,
-                    child: Container(color: Colors.greenAccent,height: 100,width: MediaQuery.of(context).size.width,)
+                    child: Container(color: Colors.black,height: 100,width: MediaQuery.of(context).size.width,)
                 ),
               ),
               const SizedBox(height: 20),
@@ -315,7 +315,7 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
                 position: _slideAnimationBoxThree!,
                 child: FadeTransition(
                     opacity: _fadeAnimationTwo!,
-                    child: Container(color: Colors.greenAccent,height: 100,width: MediaQuery.of(context).size.width,)
+                    child: Container(color: Colors.black,height: 100,width: MediaQuery.of(context).size.width,)
                 ),
               ),
             ],
